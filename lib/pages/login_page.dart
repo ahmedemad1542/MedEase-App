@@ -13,6 +13,7 @@ class _LoginScreenState extends State<LoginPage> {
   final TextEditingController passwordController = TextEditingController();
   bool _isObscure = true;
   bool _isLoading = false;
+  String toko = '';
 
   // ✅ تسجيل الدخول
   Future<void> login() async {
@@ -34,17 +35,34 @@ class _LoginScreenState extends State<LoginPage> {
       );
 
       if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+
+        String message = responseData['message'] ?? 'Login Successful!';
+        String token = responseData['token'] ?? 'No token received.';
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text("Login Successful!"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(message),
+                  SizedBox(height: 8),
+                  Text(
+                    'Token: $token',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                ],
+              ),
               backgroundColor: Colors.green,
+              duration: Duration(seconds: 4),
             ),
           );
 
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => HomePage()),
+            MaterialPageRoute(builder: (context) => HomePage(token: token)),
           );
         }
       } else {
@@ -122,8 +140,11 @@ class _LoginScreenState extends State<LoginPage> {
             _isLoading
                 ? Center(child: CircularProgressIndicator())
                 : Center(
-                  child: ElevatedButton(onPressed: login, child: Text("Login")),
-                ),
+                    child: ElevatedButton(
+                      onPressed: login,
+                      child: Text("Login"),
+                    ),
+                  ),
             Center(
               child: TextButton(
                 onPressed: () {},

@@ -3,6 +3,9 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ProfilePage extends StatefulWidget {
+  final String token;
+
+  const ProfilePage({Key? key, required this.token}) : super(key: key);
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
@@ -31,12 +34,17 @@ class _ProfilePageState extends State<ProfilePage> {
       url,
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer YOUR_TOKEN_HERE",
+        "Authorization": "Bearer ${widget.token}",
       },
     );
 
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+      final body = jsonDecode(response.body);
+      final data = body['data']; // 🟰 خدت الداتا الحقيقية من جوة
+
       setState(() {
         nameController.text = data["name"] ?? "";
         role = data["role"] ?? "";
@@ -94,6 +102,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       _isEditing,
                     ),
                     _buildProfileField("Gender", gender),
+                    SizedBox(height: 20),
+                    Image.network(
+                      "https://res.cloudinary.com/dweffiohi/image/upload/v1745583748/wn6wqxmsalbweclrngrn.jpg",
+                    ),
                   ],
                 ),
               ),

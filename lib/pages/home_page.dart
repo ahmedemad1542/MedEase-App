@@ -6,6 +6,9 @@ import 'advices_page.dart';
 import 'home_main_page.dart';
 
 class HomePage extends StatefulWidget {
+  final String token;
+
+  const HomePage({Key? key, required this.token}) : super(key: key);
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -13,13 +16,19 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [
-    HomeMainPage(),
-    DiseasesPage(),
-    AdvicesPage(),
-    CalculatorsPage(),
-    ProfilePage(),
-  ];
+  late List<Widget> _pages; // خليها late
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      HomeMainPage(),
+      DiseasesPage(),
+      AdvicesPage(),
+      CalculatorsPage(),
+      ProfilePage(token: widget.token), // هنا تبعت التوكن صح
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -30,21 +39,20 @@ class _HomePageState extends State<HomePage> {
   Future<bool> _onWillPop() async {
     return await showDialog(
           context: context,
-          builder:
-              (context) => AlertDialog(
-                title: Text("تأكيد الخروج"),
-                content: Text("هل أنت متأكد أنك تريد الخروج من التطبيق؟"),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(false),
-                    child: Text("إلغاء"),
-                  ),
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(true),
-                    child: Text("نعم"),
-                  ),
-                ],
+          builder: (context) => AlertDialog(
+            title: Text("تأكيد الخروج"),
+            content: Text("هل أنت متأكد أنك تريد الخروج من التطبيق؟"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text("إلغاء"),
               ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text("نعم"),
+              ),
+            ],
+          ),
         ) ??
         false;
   }
